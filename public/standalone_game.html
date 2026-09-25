@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Idle Racing - Edição Standalone HTML</title>
+  <meta name="description" content="Jogo de corrida e tuning pixel art 100% funcional em um único arquivo HTML.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700;800&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #030712;
+      --card: #0f172a;
+      --card-border: #1e293b;
+      --accent: #f59e0b;
+      --primary: #6366f1;
+      --success: #10b981;
+      --danger: #ef4444;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    .font-pixel {
+      font-family: 'Press Start 2P', monospace;
+    }
+    .font-mono {
+      font-family: 'VT323', monospace;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .badge-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+    .logo-text h1 {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tag-idle {
+      font-size: 10px;
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .currencies {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cur-box {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .cur-coins { border: 1px solid rgba(245, 158, 11, 0.4); color: #f59e0b; }
+    .cur-cash { border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; }
+    .cur-scrap { border: 1px solid #475569; color: #cbd5e1; }
+    .btn {
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid #334155;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .btn:hover { background: #334155; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: #4f46e5; border-color: #6366f1; }
+    .btn-primary:hover { background: #4338ca; }
+    .btn-accent { background: #d97706; border-color: #f59e0b; color: #fff; }
+    .btn-accent:hover { background: #b45309; }
+    .btn-danger { background: #dc2626; border-color: #ef4444; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-success { background: #059669; border-color: #10b981; }
+    .btn-success:hover { background: #047857; }
+
+    /* Navigation Bar */
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      background: #090d16;
+      padding: 8px 20px;
+      border-bottom: 1px solid var(--card-border);
+      overflow-x: auto;
+    }
+    .nav-tab {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .nav-tab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .nav-tab.active {
+      color: #fff;
+      background: #4f46e5;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Race Canvas Card */
+    .canvas-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    #raceCanvas {
+      width: 100%;
+      height: 380px;
+      background: #020617;
+      border-radius: 12px;
+      display: block;
+      image-rendering: pixelated;
+    }
+    .telemetry-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .stat-tile {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid #1e293b;
+      padding: 10px 14px;
+      border-radius: 10px;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    /* Garage Grid */
+    .garage-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media(max-width: 860px) {
+      .garage-layout { grid-template-columns: 1fr; }
+    }
+    .upgrade-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .upgrade-item {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .upgrade-info h4 {
+      font-size: 15px;
+      color: #fff;
+    }
+    .upgrade-info p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Dyno view */
+    #dynoCanvas {
+      width: 100%;
+      height: 340px;
+      background: #050a14;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+      display: block;
+    }
+
+    /* Pixel Studio */
+    .studio-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr 300px;
+      gap: 20px;
+    }
+    @media(max-width: 1000px) {
+      .studio-layout { grid-template-columns: 1fr; }
+    }
+    #pixelCanvas {
+      background: #090d16;
+      border: 2px solid #334155;
+      border-radius: 8px;
+      cursor: crosshair;
+      image-rendering: pixelated;
+    }
+    .color-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+    .color-swatch.active {
+      border-color: #fff;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo-container">
+      <div class="badge-icon">🏎️</div>
+      <div class="logo-text">
+        <h1>PIXEL IDLE RACING <span class="tag-idle">STANDALONE HTML</span></h1>
+        <span style="font-size: 11px; color: #10b981;">● Motor Gráfico 78u & Shading Procedural Ativo</span>
+      </div>
+    </div>
+    <div class="currencies">
+      <div class="cur-box cur-coins">
+        <span>🪙</span> <span id="lblCoins">1,200</span>
+      </div>
+      <div class="cur-box cur-cash">
+        <span>💵</span> <span id="lblCash">50</span>
+      </div>
+      <div class="cur-box cur-scrap">
+        <span>🔩</span> <span id="lblScrap">80</span>
+      </div>
+      <button class="btn btn-accent" id="btnAudioToggle" onclick="toggleAudio()">🔊 Áudio</button>
+      <button class="btn btn-primary" onclick="addCheatFunds()">+ Fundos</button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('race')">🏁 Pista de Corrida</button>
+    <button class="nav-tab" onclick="switchTab('garage')">🔧 Garagem & Tuning</button>
+    <button class="nav-tab" onclick="switchTab('dyno')">📊 Dinamômetro (Dyno)</button>
+    <button class="nav-tab" onclick="switchTab('studio')">🎨 Asset Studio (Pixels)</button>
+    <button class="nav-tab" onclick="switchTab('betting')">🎰 Apostas & Gacha</button>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+    <!-- TAB 1: CORRIDA -->
+    <section id="tab-race" class="tab-content active">
+      <div class="canvas-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div>
+            <h2 style="font-size: 18px; font-weight: 800; color: #fff;">ARRANCADA 1/4 MILHA (402M)</h2>
+            <p style="font-size: 12px; color: var(--muted);">Acelere, troque as marchas no RPM ideal e use o nitro para pulverizar os rivais!</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-accent" onclick="startRace()">🚦 LARGADA</button>
+            <button class="btn" id="btnAutoPilot" onclick="toggleAutoPilot()">🤖 Piloto Automático: ON</button>
+          </div>
+        </div>
+
+        <canvas id="raceCanvas" width="960" height="380"></canvas>
+
+        <!-- Live Controls & Telemetry -->
+        <div class="telemetry-bar">
+          <div class="stat-tile">
+            <div class="stat-label">Velocidade</div>
+            <div class="stat-val" id="telSpeed">0 <span style="font-size:14px; color:var(--muted)">km/h</span></div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-label">Rotação (RPM)</div>
+            <div class="stat-val" id="telRPM">1,000 <span style="font-size:14px; color:var(--muted)">RPM</span></div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-label">Marcha</div>
+            <div class="stat-val" id="telGear">N</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-label">Turbo Boost</div>
+            <div class="stat-val" id="telBoost">0.0 <span style="font-size:14px; color:var(--muted)">BAR</span></div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-label">Tempo de Pista</div>
+            <div class="stat-val" id="telTime">0.00 <span style="font-size:14px; color:var(--muted)">s</span></div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-label">0-100 km/h</div>
+            <div class="stat-val" id="tel0100">-- <span style="font-size:14px; color:var(--muted)">s</span></div>
+          </div>
+        </div>
+
+        <!-- Manual Controls Bar -->
+        <div style="margin-top:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <button class="btn btn-primary" style="flex:1; padding:14px;" onmousedown="manualShiftUp()" onclick="manualShiftUp()">⬆️ SUBIR MARCHA (ESPAÇO)</button>
+          <button class="btn" style="flex:1; padding:14px;" onmousedown="manualShiftDown()" onclick="manualShiftDown()">⬇️ REDUZIR MARCHA</button>
+          <button class="btn btn-danger" style="flex:1; padding:14px;" onmousedown="manualNitro()" onclick="manualNitro()">🔥 ATIVAR NITRO (N)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: GARAGEM & TUNING -->
+    <section id="tab-garage" class="tab-content">
+      <div class="garage-layout">
+        <!-- Visuals & Selection -->
+        <div class="canvas-card">
+          <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 14px;">VISUAL & CHASSI</h2>
+          <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="selectCarChassis('tuner')">Tuner Supra</button>
+            <button class="btn" onclick="selectCarChassis('muscle')">Muscle GT500</button>
+            <button class="btn" onclick="selectCarChassis('supercar')">Porsche GT3</button>
+            <button class="btn" onclick="selectCarChassis('apex')">Apex GT</button>
+            <button class="btn btn-accent" onclick="selectCarChassis('custom')">Custom Studio</button>
+          </div>
+
+          <div style="margin-bottom:14px;">
+            <label style="font-size:12px; color:var(--muted); display:block; margin-bottom:4px;">Pintura Primária:</label>
+            <input type="color" id="pickerPrimaryColor" value="#3b82f6" onchange="updateColors()" style="width:100%; height:40px; border-radius:8px; cursor:pointer; background:#1e293b; border:1px solid #334155;">
+          </div>
+          <div style="margin-bottom:14px;">
+            <label style="font-size:12px; color:var(--muted); display:block; margin-bottom:4px;">Pintura Secundária (Aero/Carbono):</label>
+            <input type="color" id="pickerSecondaryColor" value="#0f172a" onchange="updateColors()" style="width:100%; height:40px; border-radius:8px; cursor:pointer; background:#1e293b; border:1px solid #334155;">
+          </div>
+          <div style="margin-bottom:14px;">
+            <label style="font-size:12px; color:var(--muted); display:block; margin-bottom:4px;">Neon Underglow:</label>
+            <input type="color" id="pickerNeonColor" value="#38bdf8" onchange="updateColors()" style="width:100%; height:40px; border-radius:8px; cursor:pointer; background:#1e293b; border:1px solid #334155;">
+          </div>
+
+          <div class="stat-tile" style="margin-top:20px;">
+            <div class="stat-label">Potência Total</div>
+            <div class="stat-val" id="lblTotalHP">650 <span style="font-size:14px; color:var(--muted)">WHP</span></div>
+            <div class="stat-label" style="margin-top:8px;">Torque</div>
+            <div class="stat-val" id="lblTotalTorque">780 <span style="font-size:14px; color:var(--muted)">Nm</span></div>
+          </div>
+        </div>
+
+        <!-- Performance Upgrades -->
+        <div class="canvas-card">
+          <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 14px;">UPGRADES DE PERFORMANCE</h2>
+          <div class="upgrade-list" id="upgradeContainer">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: DINAMÔMETRO -->
+    <section id="tab-dyno" class="tab-content">
+      <div class="canvas-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <h2 style="font-size: 18px; font-weight: 800;">PUXADA DE DINAMÔMETRO</h2>
+            <p style="font-size:12px; color:var(--muted);">Mede potência nas rodas (WHP) e torque (Nm) de 1.000 a 9.000 RPM com som real do motor.</p>
+          </div>
+          <button class="btn btn-danger" onclick="runDynoTest()">🚀 INICIAR PUXADA</button>
+        </div>
+        <canvas id="dynoCanvas" width="900" height="340"></canvas>
+      </div>
+    </section>
+
+    <!-- TAB 4: PIXEL STUDIO -->
+    <section id="tab-studio" class="tab-content">
+      <div class="studio-layout">
+        <!-- Tools -->
+        <div class="canvas-card">
+          <h3 style="font-size:15px; font-weight:800; margin-bottom:10px;">FERRAMENTAS</h3>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <button class="btn btn-primary" onclick="setStudioTool('pencil')">✏️ Pincel</button>
+            <button class="btn" onclick="setStudioTool('bucket')">🪣 Balde de Tinta</button>
+            <button class="btn" onclick="setStudioTool('eraser')">🧹 Borracha</button>
+            <button class="btn" onclick="setStudioTool('picker')">🧪 Conta-gotas</button>
+            <button class="btn btn-danger" onclick="clearStudioCanvas()">🗑️ Limpar Tudo</button>
+          </div>
+
+          <h3 style="font-size:15px; font-weight:800; margin-top:20px; margin-bottom:10px;">TEMPLATES OFICIAIS</h3>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <button class="btn btn-accent" onclick="loadStudioPreset('blank')">📄 Tela em Branco</button>
+            <button class="btn" onclick="loadStudioPreset('tuner')">Tuner Supra MK4</button>
+            <button class="btn" onclick="loadStudioPreset('muscle')">Muscle GT500</button>
+            <button class="btn" onclick="loadStudioPreset('supercar')">Porsche GT3 RS</button>
+            <button class="btn" onclick="loadStudioPreset('apex')">Apex GT</button>
+          </div>
+        </div>
+
+        <!-- Center: Canvas Grid -->
+        <div class="canvas-card" style="display:flex; flex-direction:column; align-items:center;">
+          <div style="margin-bottom:10px; font-size:12px; color:var(--muted);">
+            Grade de Chassi Oficial (48 x 24 Pixels - Escala Unificada 78u)
+          </div>
+          <canvas id="pixelCanvas" width="576" height="288"></canvas>
+          <div style="margin-top:14px; display:flex; gap:10px;">
+            <button class="btn btn-success" onclick="equipStudioCar()">💾 Salvar & Equipar no Jogo</button>
+          </div>
+        </div>
+
+        <!-- Right: Shading Tokens & Palette -->
+        <div class="canvas-card">
+          <h3 style="font-size:15px; font-weight:800; margin-bottom:10px;">SHADING DINÂMICO</h3>
+          <p style="font-size:11px; color:var(--muted); margin-bottom:10px;">Estes tons adaptam automaticamente conforme a cor primária e secundária:</p>
+
+          <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:14px;">
+            <button class="btn" onclick="setStudioToken('__PRIMARY_HI__')" style="background:#60a5fa; color:#000;">✨ Brilho Teto/Capô</button>
+            <button class="btn" onclick="setStudioToken('__PRIMARY_LIGHT__')" style="background:#3b82f6;">🔆 Lataria Clara</button>
+            <button class="btn" onclick="setStudioToken('__PRIMARY_BASE__')" style="background:#2563eb;">🟦 Cor Base Primária</button>
+            <button class="btn" onclick="setStudioToken('__PRIMARY_DARK__')" style="background:#1d4ed8;">🌑 Vinco / Sombra</button>
+            <button class="btn" onclick="setStudioToken('__PRIMARY_DEEP__')" style="background:#1e3a8a;">⬛ Sombra Profunda</button>
+            <button class="btn" onclick="setStudioToken('__SECONDARY_BASE__')" style="background:#475569;">🏁 Aerofólio / Difusor</button>
+          </div>
+
+          <h3 style="font-size:15px; font-weight:800; margin-bottom:10px;">CORES FIXAS</h3>
+          <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px;">
+            <div class="color-swatch" style="background:#000000;" onclick="setStudioColor('#000000')"></div>
+            <div class="color-swatch" style="background:#ffffff;" onclick="setStudioColor('#ffffff')"></div>
+            <div class="color-swatch" style="background:#ef4444;" onclick="setStudioColor('#ef4444')"></div>
+            <div class="color-swatch" style="background:#f59e0b;" onclick="setStudioColor('#f59e0b')"></div>
+            <div class="color-swatch" style="background:#10b981;" onclick="setStudioColor('#10b981')"></div>
+            <div class="color-swatch" style="background:#06b6d4;" onclick="setStudioColor('#06b6d4')"></div>
+            <div class="color-swatch" style="background:#a855f7;" onclick="setStudioColor('#a855f7')"></div>
+            <div class="color-swatch" style="background:#334155;" onclick="setStudioColor('#334155')"></div>
+            <div class="color-swatch" style="background:#f43f5e;" onclick="setStudioColor('#f43f5e')"></div>
+            <div class="color-swatch" style="background:#e2e8f0;" onclick="setStudioColor('#e2e8f0')"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: APOSTAS & GACHA -->
+    <section id="tab-betting" class="tab-content">
+      <div class="garage-layout">
+        <div class="canvas-card">
+          <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 10px;">APOSTAS AO VIVO</h2>
+          <p style="font-size:12px; color:var(--muted); margin-bottom:16px;">Aposte suas moedas na sua própria vitória para multiplicar seus lucros!</p>
+          <div style="display:flex; gap:10px; margin-bottom:14px;">
+            <button class="btn btn-accent" onclick="placeBet(100)">🪙 Apostar 100</button>
+            <button class="btn btn-accent" onclick="placeBet(500)">🪙 Apostar 500</button>
+            <button class="btn btn-accent" onclick="placeBet(1000)">🪙 Apostar 1.000</button>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-label">Aposta Atual</div>
+            <div class="stat-val" id="lblCurrentBet">0 <span style="font-size:14px; color:var(--muted)">Moedas (Odd: 2.2x)</span></div>
+          </div>
+        </div>
+
+        <div class="canvas-card">
+          <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 10px;">FERRO-VELHO (JUNKYARD GACHA)</h2>
+          <p style="font-size:12px; color:var(--muted); margin-bottom:16px;">Abra caixas de sucata para encontrar peças raras e lendárias!</p>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-primary" onclick="openGacha('common')">📦 Caixa Comum (200 🪙)</button>
+            <button class="btn btn-success" onclick="openGacha('rare')">⭐ Caixa Rara (5 💵)</button>
+          </div>
+          <div id="gachaResult" style="margin-top:16px; font-size:14px; font-weight:700; color:#10b981;"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // =========================================================================
+    // GAME STATE & LOCALSTORAGE
+    // =========================================================================
+    const SAVE_KEY = 'pixel_idle_racing_standalone_v1';
+    let gameState = {
+      coins: 1200,
+      cash: 50,
+      scrap: 80,
+      activeChassis: 'tuner',
+      primaryColor: '#3b82f6',
+      secondaryColor: '#0f172a',
+      neonColor: '#38bdf8',
+      upgrades: {
+        engine: 1,
+        turbo: 1,
+        transmission: 1,
+        tires: 1,
+        nitro: 1,
+        weight: 1
+      },
+      currentBet: 0,
+      customGrid: null
+    };
+
+    function loadSavedState() {
+      try {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          gameState = { ...gameState, ...parsed };
+        }
+      } catch(e) {}
+      updateCurrenciesUI();
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify(gameState));
+      } catch(e) {}
+    }
+
+    function updateCurrenciesUI() {
+      document.getElementById('lblCoins').innerText = gameState.coins.toLocaleString();
+      document.getElementById('lblCash').innerText = gameState.cash.toLocaleString();
+      document.getElementById('lblScrap').innerText = gameState.scrap.toLocaleString();
+      calculateCarStats();
+    }
+
+    function addCheatFunds() {
+      gameState.coins += 5000;
+      gameState.cash += 50;
+      gameState.scrap += 100;
+      saveState();
+      updateCurrenciesUI();
+    }
+
+    // =========================================================================
+    // WEB AUDIO API PROCEDURAL SOUND SYNTHESIZER
+    // =========================================================================
+    let audioCtx = null;
+    let audioEnabled = true;
+    let engineOsc = null;
+    let engineGain = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      const btn = document.getElementById('btnAudioToggle');
+      btn.innerText = audioEnabled ? '🔊 Áudio' : '🔇 Mudo';
+      if (!audioEnabled && engineGain) {
+        engineGain.gain.setValueAtTime(0, audioCtx.currentTime);
+      }
+    }
+
+    function playBeep(freq, type = 'sine', duration = 0.1) {
+      if (!audioEnabled) return;
+      initAudio();
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    function playBlowoff() {
+      if (!audioEnabled) return;
+      initAudio();
+      try {
+        const bufferSize = audioCtx.sampleRate * 0.25;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(2500, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.25);
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noise.start();
+      } catch(e) {}
+    }
+
+    function updateEngineSound(rpm) {
+      if (!audioEnabled) return;
+      initAudio();
+      try {
+        if (!engineOsc) {
+          engineOsc = audioCtx.createOscillator();
+          engineOsc.type = 'sawtooth';
+          engineGain = audioCtx.createGain();
+          engineGain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+          engineOsc.connect(engineGain);
+          engineGain.connect(audioCtx.destination);
+          engineOsc.start();
+        }
+        const freq = 40 + (rpm / 9000) * 260;
+        engineOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      } catch(e) {}
+    }
+
+    // =========================================================================
+    // COLOR ADJUSTER (BRIGHTNESS / SHADING)
+    // =========================================================================
+    function adjustBrightness(hex, percent) {
+      hex = hex.replace('#', '');
+      if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+      const num = parseInt(hex, 16);
+      let r = (num >> 16) + Math.round(255 * (percent / 100));
+      let g = ((num >> 8) & 0x00FF) + Math.round(255 * (percent / 100));
+      let b = (num & 0x0000FF) + Math.round(255 * (percent / 100));
+      r = Math.min(255, Math.max(0, r));
+      g = Math.min(255, Math.max(0, g));
+      b = Math.min(255, Math.max(0, b));
+      return '#' + (r << 16 | g << 8 | b).toString(16).padStart(6, '0');
+    }
+
+    // =========================================================================
+    // CAR STATS & UPGRADES
+    // =========================================================================
+    const UPGRADE_CONFIGS = [
+      { id: 'engine', name: 'Bloco de Motor & Pistões', desc: '+65 WHP, +80 Nm de Torque', baseCost: 150 },
+      { id: 'turbo', name: 'Turbina & Wastegate', desc: '+85 WHP, +110 Nm, spool mais rápido', baseCost: 220 },
+      { id: 'transmission', name: 'Câmbio Sequencial & Embreagem', desc: 'Trocas mais rápidas (-40ms), melhor tração', baseCost: 180 },
+      { id: 'tires', name: 'Pneus Semi-Slick Drag Radial', desc: '+18% Grip na arrancada 60ft', baseCost: 130 },
+      { id: 'nitro', name: 'Kit Óxido Nitroso (Garrafa 10lbs)', desc: '+120 WHP instantâneos por 4 segundos', baseCost: 250 },
+      { id: 'weight', name: 'Alívio de Peso (Fibra de Carbono)', desc: '-60 Kg na massa do veículo', baseCost: 160 }
+    ];
+
+    function calculateCarStats() {
+      const u = gameState.upgrades;
+      const baseHP = 380;
+      const totalHP = baseHP + (u.engine - 1) * 65 + (u.turbo - 1) * 85 + (u.nitro - 1) * 30;
+      const totalTorque = 450 + (u.engine - 1) * 80 + (u.turbo - 1) * 110;
+      document.getElementById('lblTotalHP').innerText = `${totalHP} WHP`;
+      document.getElementById('lblTotalTorque').innerText = `${totalTorque} Nm`;
+      renderUpgradesList();
+      return { totalHP, totalTorque };
+    }
+
+    function renderUpgradesList() {
+      const container = document.getElementById('upgradeContainer');
+      if (!container) return;
+      container.innerHTML = UPGRADE_CONFIGS.map(cfg => {
+        const lvl = gameState.upgrades[cfg.id] || 1;
+        const cost = Math.round(cfg.baseCost * Math.pow(1.45, lvl - 1));
+        return `
+          <div class="upgrade-item">
+            <div class="upgrade-info">
+              <h4>${cfg.name} <span style="font-size:12px; color:var(--accent);">Nv. ${lvl}</span></h4>
+              <p>${cfg.desc}</p>
+            </div>
+            <button class="btn btn-primary" onclick="buyUpgrade('${cfg.id}', ${cost})">
+              Melhorar (🪙 ${cost})
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function buyUpgrade(id, cost) {
+      if (gameState.coins >= cost) {
+        gameState.coins -= cost;
+        gameState.upgrades[id] = (gameState.upgrades[id] || 1) + 1;
+        playBeep(880, 'triangle', 0.15);
+        saveState();
+        updateCurrenciesUI();
+      } else {
+        playBeep(220, 'sawtooth', 0.2);
+        alert('Moedas insuficientes!');
+      }
+    }
+
+    // =========================================================================
+    // PIXEL CAR CHASSIS DRAWING ROUTINES (UNIFIED 78u SCALE & SMOOTH SHADING)
+    // =========================================================================
+    function drawPixelCar(ctx, x, y, primaryCol, secondaryCol, neonCol, chassisType, customGrid, wheelRotation, hasNitro) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      // 1. Neon Underglow
+      if (neonCol) {
+        ctx.save();
+        ctx.shadowColor = neonCol;
+        ctx.shadowBlur = 18;
+        ctx.fillStyle = neonCol;
+        ctx.globalAlpha = 0.55;
+        ctx.fillRect(-20, 22, 118, 5);
+        ctx.restore();
+      }
+
+      // 2. Wheel Ground Shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+      ctx.beginPath();
+      ctx.ellipse(39, 25, 48, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Tokens Shading Resolver
+      const hi = adjustBrightness(primaryCol, 38);
+      const light = adjustBrightness(primaryCol, 18);
+      const pri = primaryCol;
+      const dark = adjustBrightness(primaryCol, -22);
+      const deep = adjustBrightness(primaryCol, -45);
+      const secHi = adjustBrightness(secondaryCol, 30);
+      const sec = secondaryCol;
+      const secDark = adjustBrightness(secondaryCol, -25);
+
+      const pW = 48, pH = 24;
+      const scale = 78 / pW; // Exact unified 78u viewport scale
+
+      // Draw Pixel Body
+      ctx.save();
+      ctx.scale(scale, scale);
+
+      if (chassisType === 'custom' && customGrid) {
+        // Draw custom matrix
+        for (let py = 0; py < pH; py++) {
+          for (let px = 0; px < pW; px++) {
+            let col = customGrid[py * pW + px];
+            if (!col || col === 'transparent') continue;
+            if (col === '__PRIMARY_HI__') col = hi;
+            else if (col === '__PRIMARY_LIGHT__') col = light;
+            else if (col === '__PRIMARY_BASE__') col = pri;
+            else if (col === '__PRIMARY_DARK__') col = dark;
+            else if (col === '__PRIMARY_DEEP__') col = deep;
+            else if (col === '__SECONDARY_HI__') col = secHi;
+            else if (col === '__SECONDARY_BASE__') col = sec;
+            else if (col === '__SECONDARY_DARK__') col = secDark;
+            ctx.fillStyle = col;
+            ctx.fillRect(px, py, 1, 1);
+          }
+        }
+      } else {
+        // Procedural Built-in Chassis
+        // Body Base
+        ctx.fillStyle = deep;
+        ctx.fillRect(4, 18, 40, 2);
+        ctx.fillStyle = dark;
+        ctx.fillRect(4, 16, 41, 2);
+        ctx.fillStyle = pri;
+        ctx.fillRect(5, 14, 40, 2);
+        ctx.fillStyle = light;
+        ctx.fillRect(6, 13, 38, 1);
+        ctx.fillStyle = hi;
+        ctx.fillRect(16, 12, 22, 1);
+
+        // Glass & Greenhouse
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(15, 8, 18, 5);
+        ctx.fillStyle = pri;
+        ctx.fillRect(18, 7, 12, 1);
+        ctx.fillStyle = hi;
+        ctx.fillRect(19, 7, 10, 1);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(26, 8, 4, 3); // Glare
+
+        // Aero Kits / Splitters
+        ctx.fillStyle = sec;
+        ctx.fillRect(2, 19, 44, 1);
+        ctx.fillRect(4, 7, 6, 1); // Spoiler
+        ctx.fillRect(5, 8, 1, 6);
+        ctx.fillRect(8, 8, 1, 6);
+
+        // Lights
+        ctx.fillStyle = '#fef08a'; // Headlight
+        ctx.fillRect(44, 14, 2, 2);
+        ctx.fillStyle = '#ef4444'; // Taillight
+        ctx.fillRect(4, 14, 2, 2);
+
+        // Arches
+        ctx.clearRect(8, 17, 7, 3);
+        ctx.clearRect(33, 17, 7, 3);
+      }
+      ctx.restore();
+
+      // 3. Wheels with Spin Blur
+      drawWheel(ctx, 19, 21, 6, wheelRotation);
+      drawWheel(ctx, 60, 21, 6, wheelRotation);
+
+      // 4. Nitro Flame
+      if (hasNitro) {
+        ctx.save();
+        ctx.fillStyle = '#38bdf8';
+        ctx.shadowColor = '#06b6d4';
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.moveTo(3, 19);
+        ctx.lineTo(-12 - Math.random() * 8, 20);
+        ctx.lineTo(3, 21);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      ctx.restore();
+    }
+
+    function drawWheel(ctx, x, y, radius, rot) {
+      ctx.save();
+      ctx.translate(x, y);
+      // Tire Rubber
+      ctx.fillStyle = '#09090b';
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Rim
+      ctx.fillStyle = '#94a3b8';
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 0.65, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Spokes rotating
+      ctx.strokeStyle = '#f8fafc';
+      ctx.lineWidth = 1.2;
+      for (let a = 0; a < Math.PI * 2; a += Math.PI / 2) {
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(Math.cos(a + rot) * (radius * 0.6), Math.sin(a + rot) * (radius * 0.6));
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // =========================================================================
+    // RACE SIMULATION & 6X POST-RACE SPEEDUP
+    // =========================================================================
+    let raceActive = false;
+    let raceWinnerDeclared = false;
+    let autoPilot = true;
+    let raceTrackLength = 402; // 1/4 mile
+
+    let playerCar = {
+      x: 30,
+      y: 90,
+      speed: 0,
+      rpm: 1000,
+      gear: 1,
+      gearRatios: [3.82, 2.36, 1.68, 1.31, 1.00, 0.79],
+      finalDrive: 3.73,
+      boost: 0,
+      nitroActive: false,
+      nitroRemaining: 4.0,
+      distance: 0,
+      finished: false,
+      finishTime: 0,
+      time0to100: null
+    };
+
+    let rivals = [
+      { name: 'Supra Rival', x: 30, y: 160, speed: 0, distance: 0, finished: false, finishTime: 0, color: '#ef4444' },
+      { name: 'Eleanor V8', x: 30, y: 230, speed: 0, distance: 0, finished: false, finishTime: 0, color: '#f59e0b' },
+      { name: 'GT3 Track', x: 30, y: 300, speed: 0, distance: 0, finished: false, finishTime: 0, color: '#10b981' }
+    ];
+
+    let raceStartTime = 0;
+    let raceTimer = 0;
+    let wheelSpinAngle = 0;
+
+    function startRace() {
+      initAudio();
+      raceActive = true;
+      raceWinnerDeclared = false;
+      raceStartTime = performance.now();
+      raceTimer = 0;
+
+      playerCar.x = 30;
+      playerCar.speed = 0;
+      playerCar.rpm = 1200;
+      playerCar.gear = 1;
+      playerCar.boost = 0;
+      playerCar.nitroActive = false;
+      playerCar.nitroRemaining = 4.0;
+      playerCar.distance = 0;
+      playerCar.finished = false;
+      playerCar.finishTime = 0;
+      playerCar.time0to100 = null;
+
+      rivals.forEach((r, idx) => {
+        r.x = 30;
+        r.speed = 0;
+        r.distance = 0;
+        r.finished = false;
+        r.finishTime = 0;
+      });
+
+      playBeep(440, 'sine', 0.1);
+      setTimeout(() => playBeep(440, 'sine', 0.1), 300);
+      setTimeout(() => playBeep(880, 'triangle', 0.25), 600);
+    }
+
+    function toggleAutoPilot() {
+      autoPilot = !autoPilot;
+      document.getElementById('btnAutoPilot').innerText = autoPilot ? '🤖 Piloto Automático: ON' : '🕹️ Piloto Manual: ON';
+    }
+
+    function manualShiftUp() {
+      if (playerCar.gear < 6) {
+        playerCar.gear++;
+        playerCar.rpm = Math.max(2500, playerCar.rpm * 0.68);
+        playBlowoff();
+      }
+    }
+
+    function manualShiftDown() {
+      if (playerCar.gear > 1) {
+        playerCar.gear--;
+        playerCar.rpm = Math.min(8800, playerCar.rpm * 1.35);
+        playBeep(300, 'sawtooth', 0.08);
+      }
+    }
+
+    function manualNitro() {
+      if (playerCar.nitroRemaining > 0) {
+        playerCar.nitroActive = true;
+        playBeep(650, 'sawtooth', 0.3);
+      }
+    }
+
+    // MAIN RACE LOOP (60 FPS)
+    function updateRaceSimulation(dt) {
+      if (!raceActive) return;
+      raceTimer += dt;
+      wheelSpinAngle += (playerCar.speed / 10) * dt * 20;
+
+      // Check if ANY racer finished
+      const anyWinner = playerCar.finished || rivals.some(r => r.finished);
+      if (anyWinner && !raceWinnerDeclared) {
+        raceWinnerDeclared = true;
+      }
+
+      // Rival 6x Speedup Multiplier after race has a winner!
+      const postRaceMultiplier = raceWinnerDeclared ? 6.0 : 1.0;
+
+      // 1. Player Physics
+      if (!playerCar.finished) {
+        const stats = calculateCarStats();
+        let targetHP = stats.totalHP;
+        if (playerCar.nitroActive && playerCar.nitroRemaining > 0) {
+          targetHP += 180;
+          playerCar.nitroRemaining -= dt;
+          if (playerCar.nitroRemaining <= 0) playerCar.nitroActive = false;
+        }
+
+        // Auto pilot shifting logic
+        if (autoPilot) {
+          if (playerCar.rpm >= 7200 && playerCar.gear < 6) {
+            manualShiftUp();
+          }
+          if (playerCar.gear >= 2 && !playerCar.nitroActive && playerCar.nitroRemaining > 0) {
+            manualNitro();
+          }
+        }
+
+        // Accel calculation
+        const gearRatio = playerCar.gearRatios[playerCar.gear - 1];
+        const accel = (targetHP / 28) * (gearRatio / 2.0);
+        playerCar.speed = Math.min(360, playerCar.speed + accel * dt * 2.2);
+
+        // RPM calculation
+        playerCar.rpm = Math.min(9000, 1000 + (playerCar.speed * 25 * gearRatio));
+        playerCar.boost = Math.min(2.4, (playerCar.rpm / 9000) * 2.4);
+
+        // 0-100 km/h timer
+        if (playerCar.speed >= 100 && !playerCar.time0to100) {
+          playerCar.time0to100 = raceTimer.toFixed(2);
+        }
+
+        // Distance & Finish
+        playerCar.distance += (playerCar.speed / 3.6) * dt;
+        playerCar.x = 30 + (playerCar.distance / raceTrackLength) * 820;
+
+        if (playerCar.distance >= raceTrackLength) {
+          playerCar.finished = true;
+          playerCar.finishTime = raceTimer.toFixed(2);
+          if (!anyWinner) {
+            // Player won!
+            playBeep(987, 'triangle', 0.4);
+            const winCoins = 350 + (gameState.currentBet > 0 ? Math.round(gameState.currentBet * 2.2) : 0);
+            gameState.coins += winCoins;
+            gameState.currentBet = 0;
+            saveState();
+            updateCurrenciesUI();
+          }
+        }
+        updateEngineSound(playerCar.rpm);
+      } else {
+        // Player crosses finish line and cruises
+        playerCar.speed = Math.max(0, playerCar.speed - 30 * dt);
+        playerCar.x += (playerCar.speed / 3.6) * dt * 0.4;
+      }
+
+      // 2. Rivals Simulation with 6x Multiplier
+      rivals.forEach((r, idx) => {
+        if (!r.finished) {
+          const rivalTargetSpeed = (260 + idx * 25) * postRaceMultiplier;
+          r.speed = Math.min(rivalTargetSpeed, r.speed + (35 + idx * 8) * dt * postRaceMultiplier);
+          r.distance += (r.speed / 3.6) * dt;
+          r.x = 30 + (r.distance / raceTrackLength) * 820;
+
+          if (r.distance >= raceTrackLength) {
+            r.finished = true;
+            r.finishTime = raceTimer.toFixed(2);
+          }
+        } else {
+          r.x += (r.speed / 3.6) * dt * 0.4;
+        }
+      });
+
+      // Update Telemetry UI
+      document.getElementById('telSpeed').innerHTML = `${Math.round(playerCar.speed)} <span style="font-size:14px; color:var(--muted)">km/h</span>`;
+      document.getElementById('telRPM').innerHTML = `${Math.round(playerCar.rpm).toLocaleString()} <span style="font-size:14px; color:var(--muted)">RPM</span>`;
+      document.getElementById('telGear').innerText = playerCar.gear.toString();
+      document.getElementById('telBoost').innerHTML = `${playerCar.boost.toFixed(1)} <span style="font-size:14px; color:var(--muted)">BAR</span>`;
+      document.getElementById('telTime').innerHTML = `${raceTimer.toFixed(2)} <span style="font-size:14px; color:var(--muted)">s</span>`;
+      document.getElementById('tel0100').innerHTML = playerCar.time0to100 ? `${playerCar.time0to100} <span style="font-size:14px; color:var(--muted)">s</span>` : `-- <span style="font-size:14px; color:var(--muted)">s</span>`;
+    }
+
+    function renderRaceCanvas() {
+      const cvs = document.getElementById('raceCanvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      const w = cvs.width, h = cvs.height;
+
+      // Sky & Background
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(0, 0, w, h);
+
+      // Distant city silhouette
+      ctx.fillStyle = '#0f172a';
+      for (let i = 0; i < w; i += 40) {
+        const bh = 30 + Math.sin(i * 0.05) * 20;
+        ctx.fillRect(i, 60 - bh, 35, bh);
+      }
+
+      // Asphalt Track Lanes
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(0, 60, w, h - 60);
+
+      // Road Borders & Guardrails
+      ctx.fillStyle = '#ef4444';
+      for (let x = 0; x < w; x += 30) {
+        ctx.fillStyle = (Math.floor(x / 30) % 2 === 0) ? '#ef4444' : '#f8fafc';
+        ctx.fillRect(x, 56, 30, 4);
+        ctx.fillRect(x, h - 6, 30, 4);
+      }
+
+      // Lane Dividers
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.setLineDash([20, 20]);
+      [140, 210, 280].forEach(ly => {
+        ctx.beginPath();
+        ctx.moveTo(0, ly);
+        ctx.lineTo(w, ly);
+        ctx.stroke();
+      });
+      ctx.setLineDash([]);
+
+      // Start Line
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(30, 60, 4, h - 60);
+
+      // Finish Line Checkered Pattern
+      const finishX = 850;
+      for (let y = 60; y < h; y += 10) {
+        for (let x = finishX; x < finishX + 16; x += 8) {
+          ctx.fillStyle = ((Math.floor(x / 8) + Math.floor(y / 10)) % 2 === 0) ? '#ffffff' : '#000000';
+          ctx.fillRect(x, y, 8, 10);
+        }
+      }
+
+      // Draw Rivals
+      rivals.forEach(r => {
+        drawPixelCar(ctx, r.x, r.y, r.color, '#09090b', null, 'tuner', null, wheelSpinAngle, false);
+      });
+
+      // Draw Player Car
+      drawPixelCar(
+        ctx,
+        playerCar.x,
+        playerCar.y,
+        gameState.primaryColor,
+        gameState.secondaryColor,
+        gameState.neonColor,
+        gameState.activeChassis,
+        gameState.customGrid,
+        wheelSpinAngle,
+        playerCar.nitroActive
+      );
+    }
+
+    // =========================================================================
+    // DINAMÔMETRO (DYNO TEST)
+    // =========================================================================
+    let dynoRunning = false;
+    let dynoProgress = 0;
+    let dynoPoints = [];
+
+    function runDynoTest() {
+      if (dynoRunning) return;
+      initAudio();
+      dynoRunning = true;
+      dynoProgress = 0;
+      dynoPoints = [];
+      const stats = calculateCarStats();
+
+      const interval = setInterval(() => {
+        dynoProgress += 0.02;
+        const currentRPM = 1000 + dynoProgress * 8000;
+        updateEngineSound(currentRPM);
+
+        // Power curve math
+        const rpmFactor = Math.sin((dynoProgress * Math.PI) / 1.1);
+        const hp = Math.max(40, stats.totalHP * rpmFactor);
+        const torque = Math.max(60, stats.totalTorque * Math.sin(dynoProgress * Math.PI * 0.9));
+
+        dynoPoints.push({ rpm: currentRPM, hp, torque });
+        drawDynoCanvas();
+
+        if (dynoProgress >= 1.0) {
+          clearInterval(interval);
+          dynoRunning = false;
+          playBlowoff();
+        }
+      }, 50);
+    }
+
+    function drawDynoCanvas() {
+      const cvs = document.getElementById('dynoCanvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      const w = cvs.width, h = cvs.height;
+
+      ctx.fillStyle = '#050a14';
+      ctx.fillRect(0, 0, w, h);
+
+      // Grid Lines
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let x = 60; x < w - 20; x += 80) {
+        ctx.beginPath();
+        ctx.moveTo(x, 20);
+        ctx.lineTo(x, h - 30);
+        ctx.stroke();
+      }
+      for (let y = 30; y < h - 30; y += 40) {
+        ctx.beginPath();
+        ctx.moveTo(60, y);
+        ctx.lineTo(w - 20, y);
+        ctx.stroke();
+      }
+
+      // Draw Curves
+      if (dynoPoints.length > 1) {
+        // HP Curve (Red)
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        dynoPoints.forEach((pt, idx) => {
+          const px = 60 + ((pt.rpm - 1000) / 8000) * (w - 100);
+          const py = (h - 30) - (pt.hp / 1000) * (h - 60);
+          if (idx === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        });
+        ctx.stroke();
+
+        // Torque Curve (Blue)
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        dynoPoints.forEach((pt, idx) => {
+          const px = 60 + ((pt.rpm - 1000) / 8000) * (w - 100);
+          const py = (h - 30) - (pt.torque / 1000) * (h - 60);
+          if (idx === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        });
+        ctx.stroke();
+      }
+
+      // Legend
+      ctx.fillStyle = '#ef4444';
+      ctx.font = 'bold 13px Rajdhani';
+      ctx.fillText('● Potência (WHP)', 80, 40);
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillText('● Torque (Nm)', 200, 40);
+    }
+
+    // =========================================================================
+    // PIXEL STUDIO (CANVAS EDITOR & SHADING TOKENS)
+    // =========================================================================
+    const STUDIO_W = 48, STUDIO_H = 24;
+    let studioGrid = new Array(STUDIO_W * STUDIO_H).fill('transparent');
+    let studioTool = 'pencil';
+    let studioActiveColor = '__PRIMARY_BASE__';
+    let studioMouseDown = false;
+
+    function initStudio() {
+      const cvs = document.getElementById('pixelCanvas');
+      if (!cvs) return;
+
+      cvs.addEventListener('mousedown', (e) => {
+        studioMouseDown = true;
+        applyStudioPixel(e);
+      });
+      cvs.addEventListener('mousemove', (e) => {
+        if (studioMouseDown) applyStudioPixel(e);
+      });
+      window.addEventListener('mouseup', () => studioMouseDown = false);
+
+      loadStudioPreset('tuner');
+    }
+
+    function applyStudioPixel(e) {
+      const cvs = document.getElementById('pixelCanvas');
+      const rect = cvs.getBoundingClientRect();
+      const scaleX = cvs.width / rect.width;
+      const scaleY = cvs.height / rect.height;
+      const x = Math.floor(((e.clientX - rect.left) * scaleX) / (cvs.width / STUDIO_W));
+      const y = Math.floor(((e.clientY - rect.top) * scaleY) / (cvs.height / STUDIO_H));
+
+      if (x >= 0 && x < STUDIO_W && y >= 0 && y < STUDIO_H) {
+        if (studioTool === 'pencil') {
+          studioGrid[y * STUDIO_W + x] = studioActiveColor;
+        } else if (studioTool === 'eraser') {
+          studioGrid[y * STUDIO_W + x] = 'transparent';
+        } else if (studioTool === 'bucket') {
+          studioGrid.fill(studioActiveColor);
+        } else if (studioTool === 'picker') {
+          studioActiveColor = studioGrid[y * STUDIO_W + x];
+          studioTool = 'pencil';
+        }
+        renderStudioGrid();
+      }
+    }
+
+    function renderStudioGrid() {
+      const cvs = document.getElementById('pixelCanvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      const zX = cvs.width / STUDIO_W;
+      const zY = cvs.height / STUDIO_H;
+
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+      // Checkerboard
+      for (let y = 0; y < STUDIO_H; y++) {
+        for (let x = 0; x < STUDIO_W; x++) {
+          ctx.fillStyle = (x + y) % 2 === 0 ? '#0f172a' : '#1e293b';
+          ctx.fillRect(x * zX, y * zY, zX, zY);
+
+          const col = studioGrid[y * STUDIO_W + x];
+          if (col && col !== 'transparent') {
+            let displayCol = col;
+            if (col === '__PRIMARY_HI__') displayCol = adjustBrightness(gameState.primaryColor, 38);
+            else if (col === '__PRIMARY_LIGHT__') displayCol = adjustBrightness(gameState.primaryColor, 18);
+            else if (col === '__PRIMARY_BASE__') displayCol = gameState.primaryColor;
+            else if (col === '__PRIMARY_DARK__') displayCol = adjustBrightness(gameState.primaryColor, -22);
+            else if (col === '__PRIMARY_DEEP__') displayCol = adjustBrightness(gameState.primaryColor, -45);
+            else if (col === '__SECONDARY_BASE__') displayCol = gameState.secondaryColor;
+
+            ctx.fillStyle = displayCol;
+            ctx.fillRect(x * zX, y * zY, zX, zY);
+          }
+        }
+      }
+
+      // Wheel Guidelines
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+      ctx.strokeRect(8 * zX, 17 * zY, 7 * zX, 5 * zY);
+      ctx.strokeRect(33 * zX, 17 * zY, 7 * zX, 5 * zY);
+    }
+
+    function setStudioTool(t) { studioTool = t; }
+    function setStudioToken(tok) { studioActiveColor = tok; }
+    function setStudioColor(hex) { studioActiveColor = hex; }
+    function clearStudioCanvas() {
+      studioGrid.fill('transparent');
+      renderStudioGrid();
+    }
+
+    function loadStudioPreset(type) {
+      studioGrid.fill('transparent');
+      if (type === 'blank') {
+        renderStudioGrid();
+        return;
+      }
+      // Populate basic car silhouette
+      for (let x = 4; x <= 44; x++) {
+        for (let y = 14; y <= 18; y++) {
+          studioGrid[y * STUDIO_W + x] = '__PRIMARY_BASE__';
+        }
+      }
+      for (let x = 16; x <= 32; x++) {
+        for (let y = 9; y <= 13; y++) {
+          studioGrid[y * STUDIO_W + x] = '#0f172a';
+        }
+      }
+      // Wheels cut
+      for (let y = 17; y <= 19; y++) {
+        for (let x = 8; x <= 14; x++) studioGrid[y * STUDIO_W + x] = 'transparent';
+        for (let x = 33; x <= 39; x++) studioGrid[y * STUDIO_W + x] = 'transparent';
+      }
+      renderStudioGrid();
+    }
+
+    function equipStudioCar() {
+      gameState.customGrid = [...studioGrid];
+      gameState.activeChassis = 'custom';
+      saveState();
+      playBeep(987, 'triangle', 0.25);
+      alert('Chassi customizado salvo e equipado com sucesso!');
+    }
+
+    // =========================================================================
+    // GENERAL GAME CONTROLS & TAB SWITCHING
+    // =========================================================================
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      event.target.classList.add('active');
+      if (tabId === 'dyno') drawDynoCanvas();
+      if (tabId === 'studio') renderStudioGrid();
+    }
+
+    function selectCarChassis(c) {
+      gameState.activeChassis = c;
+      saveState();
+      playBeep(650, 'sine', 0.1);
+    }
+
+    function updateColors() {
+      gameState.primaryColor = document.getElementById('pickerPrimaryColor').value;
+      gameState.secondaryColor = document.getElementById('pickerSecondaryColor').value;
+      gameState.neonColor = document.getElementById('pickerNeonColor').value;
+      saveState();
+      renderStudioGrid();
+    }
+
+    function placeBet(amount) {
+      if (gameState.coins >= amount) {
+        gameState.coins -= amount;
+        gameState.currentBet += amount;
+        document.getElementById('lblCurrentBet').innerHTML = `${gameState.currentBet} <span style="font-size:14px; color:var(--muted)">Moedas (Odd: 2.2x)</span>`;
+        updateCurrenciesUI();
+        playBeep(750, 'triangle', 0.15);
+      } else {
+        alert('Moedas insuficientes para esta aposta!');
+      }
+    }
+
+    function openGacha(tier) {
+      const costCoins = tier === 'common' ? 200 : 0;
+      const costCash = tier === 'rare' ? 5 : 0;
+      if (gameState.coins >= costCoins && gameState.cash >= costCash) {
+        gameState.coins -= costCoins;
+        gameState.cash -= costCash;
+        const rewards = [
+          'Turbina T3 Forjada (+45 WHP)',
+          'Kit Injeção Direta (+30 Nm)',
+          'Eixo de Fibra de Carbono (-25 Kg)',
+          'Pneus Slicks Drag (+15% Grip)',
+          'ECU Standalone Remap (+60 WHP)'
+        ];
+        const won = rewards[Math.floor(Math.random() * rewards.length)];
+        document.getElementById('gachaResult').innerText = `🎉 VOCÊ TIROU: ${won}!`;
+        gameState.coins += 150; // Cash back
+        saveState();
+        updateCurrenciesUI();
+        playBeep(880, 'triangle', 0.3);
+      } else {
+        alert('Saldo insuficiente!');
+      }
+    }
+
+    // Keyboard Shortcuts (Space for Shift, N for Nitro)
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        manualShiftUp();
+      } else if (e.code === 'KeyN') {
+        manualNitro();
+      }
+    });
+
+    // Main Animation Loop
+    let lastTime = performance.now();
+    function gameLoop(now) {
+      const dt = Math.min(0.1, (now - lastTime) / 1000);
+      lastTime = now;
+      updateRaceSimulation(dt);
+      renderRaceCanvas();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Initialize Game
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedState();
+      initStudio();
+      drawDynoCanvas();
+      requestAnimationFrame(gameLoop);
+    });
+  </script>
+</body>
+</html>

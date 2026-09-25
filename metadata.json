@@ -1,0 +1,6 @@
+{
+  "name": "Pixel Idle Racing",
+  "description": "Idle racing game featuring headless server simulation, pixel-art graphics, real-time WebSockets, garage tuning, 5 farm maps, junkyard gacha, and live race betting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
